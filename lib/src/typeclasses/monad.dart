@@ -18,4 +18,9 @@ abstract class Monad<F> extends Applicative<F> {
   Kind<F, B> map<A, B>(Kind<F, A> fa, MapAction<A, B> mapper) {
     return flatMap(fa, (a) => pure(mapper(a)));
   }
+
+  @override
+  Kind<F,B> ap<A, B>(Kind<F, A> fa, Kind<F, MapAction<A, B>> ff) {
+    return flatMap(fa, (a) => map(ff, (mapper) => mapper(a)));
+  }
 }

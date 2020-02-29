@@ -4,7 +4,7 @@ import 'functor.dart';
 abstract class Apply<F> extends Functor<F> {
   const Apply();
 
-  Kind<F,B> ap<A, B>(Kind<F, MapAction<A, B>> ff, Kind<F, A> fa);
+  Kind<F,B> ap<A, B>(Kind<F, A> fa, Kind<F, MapAction<A, B>> ff);
 }
 
 abstract class Applicative<F> extends Apply<F> {
@@ -14,6 +14,6 @@ abstract class Applicative<F> extends Apply<F> {
 
   @override
   Kind<F, B> map<A, B>(Kind<F, A> fa, MapAction<A, B> mapper) {
-    return ap(pure(mapper), fa);
+    return ap(fa, pure(mapper));
   }
 }

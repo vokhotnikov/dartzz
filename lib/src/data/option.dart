@@ -6,6 +6,10 @@ abstract class Option<A> extends Kind<ForOption, A> {
   const Option();
 
   B foldOption<B>(B onNone(), B onSome(A a));
+
+  factory Option.fromNullable(A value) {
+    return (value == null) ? None<A>() : Some(value);
+  }
 }
 
 extension ExOptionFixable<A> on Kind<ForOption, A> {
