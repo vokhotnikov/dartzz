@@ -21,6 +21,13 @@ class Left<A, B> extends Either<A, B> {
   C foldEither<C>(C onLeft(A a), C onRight(B b)) {
     return onLeft(value);
   }
+
+  @override
+  bool operator==(Object other) =>
+  other is Left<A, B> && value == other.value;
+
+  @override
+  int get hashCode => value.hashCode;
 }
 
 class Right<A, B> extends Either<A, B> {
@@ -32,4 +39,11 @@ class Right<A, B> extends Either<A, B> {
   C foldEither<C>(C onLeft(A a), C onRight(B b)) {
     return onRight(value);
   }
+
+  @override
+  bool operator==(Object other) =>
+  other is Right<A, B> && value == other.value;
+
+  @override
+  int get hashCode => value.hashCode;
 }

@@ -1,9 +1,12 @@
 name: dartzz
-version: 0.2.1
+version: 0.2.5
 description: A library for typed functional programming, inspired by Scala Cats and Kotlin Arrow
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
+
+dependencies:
+  tuple: ^1.0.3
 
 
 dev_dependencies:

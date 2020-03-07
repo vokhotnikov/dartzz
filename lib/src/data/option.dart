@@ -44,12 +44,8 @@ class Some<A> extends Option<A> {
   }
 
   @override
-  bool operator ==(other) {
-    return (other is Some<A>) ? value == other.value : false;
-  }
+  bool operator ==(other) => (other is Some<A>) && value == other.value;
 
   @override
-  int get hashCode {
-    return value.hashCode;
-  }
+  int get hashCode => value.hashCode;
 }

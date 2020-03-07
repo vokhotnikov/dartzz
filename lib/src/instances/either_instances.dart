@@ -32,11 +32,11 @@ class _MonadForEitherInstance<L> extends Monad<Kind<ForEither, L>> {
 }
 
 class EitherInstances<L> {
-  const EitherInstances();
+  EitherInstances();
 
-  final Functor<Kind<ForEither, L>> functor = const _MonadForEitherInstance();
-  final Applicative<Kind<ForEither, L>> applicative = const _MonadForEitherInstance();
-  final Monad<Kind<ForEither, L>> monad = const _MonadForEitherInstance();
+  final Functor<Kind<ForEither, L>> functor = _MonadForEitherInstance<L>();
+  final Applicative<Kind<ForEither, L>> applicative = _MonadForEitherInstance<L>();
+  final Monad<Kind<ForEither, L>> monad = _MonadForEitherInstance<L>();
 
   Show<Kind<Kind<ForEither, L>, A>> show<A>(Show<L> leftShow, Show<A> rightShow) {
     return _ShowForEitherInstance(leftShow, rightShow);
