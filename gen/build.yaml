@@ -1,0 +1,14 @@
+targets:
+  $default:
+    builders:
+      dartzz_gen|caseclasses:
+        enabled: true
+
+builders:
+  caseclasses:
+    import: "package:dartzz_gen/builder.dart"
+    builder_factories: ["caseClassesBuilder"]
+    build_extensions: {".dart": ["caseclasses.g.part"]}
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]

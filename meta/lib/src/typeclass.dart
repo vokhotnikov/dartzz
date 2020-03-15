@@ -1,0 +1,3 @@
+class typeclass {
+  const typeclass();
+}
