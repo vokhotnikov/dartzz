@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 void main() {
   group("ListK operations", () {
     test("map works", () {
-      final actual = <int>[2,3,5,7].k().map((x) => x - 1);
-      expect(actual.toList(), equals(<int>[1,2,4,6]));
+      final actual = <int>[2, 3, 5, 7].k().map((x) => x - 1);
+      expect(actual.toList(), equals(<int>[1, 2, 4, 6]));
     });
 
     test("flat map works", () {
@@ -18,9 +18,26 @@ void main() {
     });
 
     test("filter works", () {
-
       final l = <int>[0, 0, 2, -2, 4, -4].k();
       expect(l.filter((x) => x > 1).toList(), equals(<int>[2, 4]));
+    });
+
+    test("head option", () {
+      expect(<int>[1, 3, 0].k().headOption(), equals(1.some()));
+      expect(<int>[].k().headOption(), equals(none()));
+    });
+
+    test("flatten list of options", () {
+      final l = <Option<int>>[
+        none(),
+        1.some(),
+        3.some(),
+        none(),
+        0.some(),
+        none()
+      ].k();
+
+      expect(l.flatten(), equals(<int>[1, 3, 0].k()));
     });
 
     test("better comprehension syntax", () {

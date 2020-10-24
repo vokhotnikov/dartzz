@@ -48,6 +48,14 @@ extension ListKListKSyntaxExt<A> on ListK<ListK<A>> {
   }
 }
 
+extension ListKOptionSyntaxExt<A> on ListK<Option<A>> {
+  ListK<A> flatten() {
+    return this
+        .map((o) => o.foldOption(() => <A>[].k(), (v) => [v].k()))
+        .flatten();
+  }
+}
+
 extension WrappedListExt<A> on List<A> {
   ListK<A> k() {
     return ListK(this);
