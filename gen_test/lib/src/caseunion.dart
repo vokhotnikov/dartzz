@@ -1,5 +1,3 @@
-import 'package:analyzer/dart/element/element.dart';
-import 'package:meta/meta.dart';
 import 'package:dartzz_meta/dartzz_meta.dart';
 
 @caseUnion([_FirstSubtype, _SecondSubtype])
@@ -16,7 +14,7 @@ class _SecondSubtype implements _UnionForTesting {
 }
 
 @caseUnion([_GenericLeft, _GenericRight])
-class _GenericUnion<A, B> { }
+class _GenericUnion<A, B> {}
 
 @caseUnionMember(_GenericUnion)
 class _GenericLeft<B> implements _GenericUnion<String, B> {
@@ -26,4 +24,4 @@ class _GenericLeft<B> implements _GenericUnion<String, B> {
 @caseUnionMember(_GenericUnion)
 class _GenericRight<E extends Exception> implements _GenericUnion<E, int> {
   _GenericRight();
-} 
+}
