@@ -12,6 +12,7 @@ export 'src/typeclasses/show.dart';
 
 export 'src/data/unit.dart';
 export 'src/data/tuples.dart';
+export 'src/data/func.dart';
 
 export 'src/syntax/object_syntax.dart';
 

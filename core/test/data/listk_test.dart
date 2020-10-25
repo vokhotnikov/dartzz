@@ -40,6 +40,21 @@ void main() {
       expect(l.flatten(), equals(<int>[1, 3, 0].k()));
     });
 
+    test("add element", () {
+      expect(<int>[].k().add(17), equals(<int>[17].k()));
+      expect([-9, 10, 0].k().add(0), equals([-9, 10, 0, 0].k()));
+    });
+
+    test("element at index", () {
+      final l = <int>[3, 0, -9, 1].k();
+
+      expect(l.atOption(-1), equals(None()));
+      expect(l.atOption(0), equals(Some(3)));
+      expect(l.atOption(2), equals(Some(-9)));
+      expect(l.atOption(4), equals(None()));
+      expect(l.atOption(666), equals(None()));
+    });
+
     test("better comprehension syntax", () {
       final l1 = <int>[0, 2, 4].k();
       final l2 = <int>[1, -1].k();

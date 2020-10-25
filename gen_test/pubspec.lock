@@ -168,7 +168,7 @@ packages:
       path: "../core"
       relative: true
     source: path
-    version: "0.3.0"
+    version: "0.3.1"
   dartzz_gen:
     dependency: "direct main"
     description:

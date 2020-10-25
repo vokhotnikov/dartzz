@@ -17,8 +17,34 @@ class ListK<A> extends Kind<ForListK, A> {
 
   @nonVirtual
   List<A> get private__rawValue => _wrapped;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is ListK<A>) {
+      final raw1 = this._wrapped;
+      final raw2 = other._wrapped;
+      if (raw1.length != raw2.length) {
+        return false;
+      } else {
+        for (var i = 0; i < raw1.length; ++i) {
+          if (raw1[i] != raw2[i]) {
+            return false;
+          }
+          return true;
+        }
+      }
+    } else
+      return false;
+  }
+
+  @override
+  String toString() {
+    return '[${_wrapped.join(", ")}]';
+  }
 }
 
 extension ListKFixableExt<A> on Kind<ForListK, A> {
-  ListK<A> fix() { return this as ListK<A>; }
+  ListK<A> fix() {
+    return this as ListK<A>;
+  }
 }
