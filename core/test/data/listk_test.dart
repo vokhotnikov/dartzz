@@ -55,6 +55,16 @@ void main() {
       expect(l.atOption(666), equals(None()));
     });
 
+    test("concat lists", () {
+      final l1 = <int>[1, 4, 0].k();
+      final l2 = <int>[-19, 1].k();
+
+      expect(<int>[].k().concat(l1), equals(l1));
+      expect(l1.concat(<int>[].k()), equals(l1));
+      expect(l1.concat(l2), equals(<int>[1, 4, 0, -19, 1].k()));
+      expect(l2.concat(l1), equals(<int>[-19, 1, 1, 4, 0].k()));
+    });
+
     test("better comprehension syntax", () {
       final l1 = <int>[0, 2, 4].k();
       final l2 = <int>[1, -1].k();

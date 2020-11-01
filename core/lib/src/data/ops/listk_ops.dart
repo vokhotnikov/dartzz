@@ -26,4 +26,11 @@ extension ListKOps<A> on ListK<A> {
       return Some(this.private__rawValue[index]);
     }
   }
+
+  ListK<A> concat(ListK<A> newValues) {
+    // TODO: this should probably be replaced or unified with Monoid<ListK>
+    var rawCopy = List<A>.from(this.private__rawValue);
+    rawCopy.addAll(newValues.private__rawValue);
+    return ListK<A>(rawCopy);
+  }
 }
