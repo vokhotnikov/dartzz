@@ -1,9 +1,12 @@
 import '../option.dart';
 import '../listk.dart';
+import '../func.dart';
 import '../../syntax/option_syntax.dart';
 
 extension ListKOps<A> on ListK<A> {
   int get length => this.private__rawValue.length;
+
+  bool get isEmpty => this.length == 0;
 
   Option<A> headOption() => Some<List<A>>(this.private__rawValue)
       .filter((l) => l.isNotEmpty)
@@ -32,5 +35,11 @@ extension ListKOps<A> on ListK<A> {
     var rawCopy = List<A>.from(this.private__rawValue);
     rawCopy.addAll(newValues.private__rawValue);
     return ListK<A>(rawCopy);
+  }
+
+  ListK<A> sortBy<B extends Comparable>(Func1<B, A> selector) {
+    final copy = List<A>.of(this.private__rawValue);
+    copy.sort((x, y) => Comparable.compare(selector(x), selector(y)));
+    return ListK<A>(copy);
   }
 }

@@ -15,5 +15,15 @@ void main() {
               .flatMap((i) => Right<String, double>(i * 2)),
           equals(Right<String, double>(26.0)));
     });
+
+    test("isLeft", () {
+      expect("test".asLeft().isLeft, equals(true));
+      expect(4.asRight().isLeft, equals(false));
+    });
+
+    test("isRight", () {
+      expect("test".asLeft().isRight, equals(false));
+      expect(4.asRight().isRight, equals(true));
+    });
   });
 }

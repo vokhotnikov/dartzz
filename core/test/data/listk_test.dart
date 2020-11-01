@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dartzz_core/dartzz_core.dart';
 
 import 'package:test/test.dart';
@@ -63,6 +65,19 @@ void main() {
       expect(l1.concat(<int>[].k()), equals(l1));
       expect(l1.concat(l2), equals(<int>[1, 4, 0, -19, 1].k()));
       expect(l2.concat(l1), equals(<int>[-19, 1, 1, 4, 0].k()));
+    });
+
+    test("is empty", () {
+      expect(<int>[].k().isEmpty, equals(true));
+      expect(<int>[0].k().isEmpty, equals(false));
+    });
+
+    test("sort by derived value", () {
+      expect(<int>[].k().sortBy((a1) => a1.toString()), equals(<int>[].k()));
+      expect(<int>[8, 0, 12, 2].k().sortBy((a1) => a1),
+          equals(<int>[0, 2, 8, 12].k()));
+      expect(<int>[8, 0, 12, 2].k().sortBy((a1) => a1.toString()),
+          equals(<int>[0, 12, 2, 8].k()));
     });
 
     test("better comprehension syntax", () {

@@ -27,6 +27,7 @@ export 'src/syntax/option_syntax.dart';
 
 export 'src/data/either.dart';
 export 'src/instances/either_instances.dart';
+export 'src/data/ops/either_ops.dart';
 export 'src/syntax/either_syntax.dart';
 
 export 'src/data/listk.dart';

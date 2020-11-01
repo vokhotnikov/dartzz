@@ -30,8 +30,8 @@ class ListK<A> extends Kind<ForListK, A> {
           if (raw1[i] != raw2[i]) {
             return false;
           }
-          return true;
         }
+        return true;
       }
     } else
       return false;
