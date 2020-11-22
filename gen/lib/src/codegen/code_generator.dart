@@ -3,32 +3,15 @@ import 'package:dartzz_gen/src/codegen/codegen_model.dart';
 import 'package:dartzz_meta/dartzz_meta.dart';
 import 'package:meta/meta.dart';
 
-@immutable
-abstract class CodegenOutput {
-  const CodegenOutput();
-}
-
-@immutable
-class CodegenNewline extends CodegenOutput {
-  const CodegenNewline();
-}
-
-@immutable
-class CodegenCode extends CodegenOutput {
-  final CodeChunk chunk;
-
-  const CodegenCode(this.chunk);
-}
-
 @typeclass()
 @immutable
 abstract class CodegenSource<A> {
   const CodegenSource();
 
-  ListK<CodegenOutput> generateCode(A a);
+  ListK<CodeChunk> generateCode(A a);
 }
 
-typedef ListK<CodegenOutput> CodegenSourceFunc<A>(A a);
+typedef ListK<CodeChunk> CodegenSourceFunc<A>(A a);
 
 @immutable
 class _FuncCodegenSourceInstance<A> extends CodegenSource<A> {
@@ -37,28 +20,53 @@ class _FuncCodegenSourceInstance<A> extends CodegenSource<A> {
   const _FuncCodegenSourceInstance(this._func);
 
   @override
-  ListK<CodegenOutput> generateCode(A a) => _func(a);
+  ListK<CodeChunk> generateCode(A a) => _func(a);
 }
 
 @immutable
 class CodegenSourceInstances {
-  static CodegenOutput _code(String code) => CodegenCode(CodeChunk(code));
-  
-  static CodegenOutput _space() => _code(" ");
+  CodeChunk code(String code) => CodeChunk(code);
 
-  static _func<A>(CodegenSourceFunc<A> f) => _FuncCodegenSourceInstance<A>(f);
+  CodeChunk space() => code(" ");
 
-  CodegenSource<CodeChunk> get _codeChunkSource => _func((c) => [CodegenCode(c)].k());
+  CodeChunk newline() => code('\n');
 
-  CodegenSource<GenericTypeArg> get _genericTypeArgSource => _func((a) =>
-   [_code("${a.name}" + a.boundName.map((b) => " extends $b").getOrElse(""))].k());
+  ListK<CodeChunk> intersperse(ListK<ListK<CodeChunk>> parts, CodeChunk start,
+      CodeChunk separator, CodeChunk end) {
+    return [
+      start,
+      ...parts
+          .zipWithIndex()
+          .flatMap((idxAndCs) => (idxAndCs.it1 == 0)
+              ? idxAndCs.it2
+              : idxAndCs.it2.prepend(separator))
+          .toList(),
+      end
+    ].k();
+  }
 
-  CodegenSource<ReferencedType> get _referencedTypeSource => _func((t) => [_code(t.name)].k());
+  CodegenSource<A> func<A>(CodegenSourceFunc<A> f) =>
+      _FuncCodegenSourceInstance<A>(f);
 
-  CodegenSource<ImmutableField> get _immutableFieldSource => _func((f) => 
-  ListK([
-    [_code("final"), _space()].k(),
-    _referencedTypeSource.generateCode(f.type),
-    [_space(), _code(f.name), _code(";")].k()]).flatten());
+  CodegenSource<GenericTypeArg> get genericTypeArgSource => func((a) => [
+        code("${a.name}" + a.boundName.map((b) => " extends $b").getOrElse(""))
+      ].k());
 
+  CodegenSource<ReferencedType> get referencedTypeSource => func((t) => [
+        code(t.name),
+        ...t.typeArgs.isEmpty
+            ? <CodeChunk>[]
+            : intersperse(
+                    t.typeArgs.map((a) => referencedTypeSource.generateCode(a)),
+                    code("<"),
+                    code(","),
+                    code(">"))
+                .toList()
+      ].k());
+
+  CodegenSource<ImmutableField> get immutableFieldSource => func((f) => ListK([
+        [code("final"), space()].k(),
+        referencedTypeSource.generateCode(f.type),
+        [space(), code(f.name), code(";")].k()
+      ]).flatten());
 }

@@ -3,7 +3,7 @@
 part of 'caseclass.dart';
 
 // **************************************************************************
-// CaseClassesGenerator
+// Generator: CaseClassesGenerator1
 // **************************************************************************
 
 @immutable
@@ -12,14 +12,16 @@ class SimpleCaseClass {
   final String aStr;
 
   @protected
-  Type get zz__proto => _SimpleCaseClass;
+  Type get zz_proto => _SimpleCaseClass;
 
-  const SimpleCaseClass(this.anInt, this.aStr);
+  const SimpleCaseClass(
+    this.anInt,
+    this.aStr,
+  );
 
   @override
-  String toString() {
-    return "SimpleCaseClass(${anInt.toString()}, ${aStr.toString()})";
-  }
+  String toString() =>
+      "SimpleCaseClass(${anInt.toString()}, ${aStr.toString()})";
 
   @override
   bool operator ==(Object other) {
@@ -27,13 +29,9 @@ class SimpleCaseClass {
         anInt == other.anInt &&
         aStr == other.aStr;
   }
-}
 
-// metadata:
-//
-//  ConstructorElementImpl
-//   ParameterElementImpl anInt
-//   ParameterElementImpl aStr
+// TODO: add hashcode
+}
 
 @immutable
 class GenericCaseClass<A, B> {
@@ -42,14 +40,17 @@ class GenericCaseClass<A, B> {
   final int count;
 
   @protected
-  Type get zz__proto => _GenericCaseClass;
+  Type get zz_proto => _GenericCaseClass;
 
-  const GenericCaseClass(this.a, this.theB, this.count);
+  const GenericCaseClass(
+    this.a,
+    this.theB,
+    this.count,
+  );
 
   @override
-  String toString() {
-    return "GenericCaseClass(${a.toString()}, ${theB.toString()}, ${count.toString()})";
-  }
+  String toString() =>
+      "GenericCaseClass(${a.toString()}, ${theB.toString()}, ${count.toString()})";
 
   @override
   bool operator ==(Object other) {
@@ -58,16 +59,9 @@ class GenericCaseClass<A, B> {
         theB == other.theB &&
         count == other.count;
   }
-}
 
-// metadata:
-//
-//  ConstructorElementImpl
-//   ParameterElementImpl a
-//   ParameterElementImpl theB
-//   ParameterElementImpl count
-//  TypeParameterElementImpl A
-//  TypeParameterElementImpl B
+// TODO: add hashcode
+}
 
 @immutable
 class GenericCaseWithRestrictions<E extends Exception, A> {
@@ -75,59 +69,51 @@ class GenericCaseWithRestrictions<E extends Exception, A> {
   final A a;
 
   @protected
-  Type get zz__proto => _GenericCaseWithRestrictions;
+  Type get zz_proto => _GenericCaseWithRestrictions;
 
-  const GenericCaseWithRestrictions(this.e, this.a);
+  const GenericCaseWithRestrictions(
+    this.e,
+    this.a,
+  );
 
   @override
-  String toString() {
-    return "GenericCaseWithRestrictions(${e.toString()}, ${a.toString()})";
-  }
+  String toString() =>
+      "GenericCaseWithRestrictions(${e.toString()}, ${a.toString()})";
 
   @override
   bool operator ==(Object other) {
     return other is GenericCaseWithRestrictions && e == other.e && a == other.a;
   }
-}
 
-// metadata:
-//
-//  ConstructorElementImpl
-//   ParameterElementImpl e
-//   ParameterElementImpl a
-//  TypeParameterElementImpl E
-//  TypeParameterElementImpl A
+// TODO: add hashcode
+}
 
 @immutable
 class CompoundCaseClass<T> {
-  final GenericCaseClass gen;
-  final SimpleCaseClass simple;
+  final GenericCaseClass<String, T> gen;
+  final Option<SimpleCaseClass> simples;
   final String test;
 
   @protected
-  Type get zz__proto => _CompoundCaseClass;
+  Type get zz_proto => _CompoundCaseClass;
 
-  const CompoundCaseClass(this.gen, this.simple, this.test);
+  const CompoundCaseClass(
+    this.gen,
+    this.simples,
+    this.test,
+  );
 
   @override
-  String toString() {
-    return "CompoundCaseClass(${gen.toString()}, ${simple.toString()}, ${test.toString()})";
-  }
+  String toString() =>
+      "CompoundCaseClass(${gen.toString()}, ${simples.toString()}, ${test.toString()})";
 
   @override
   bool operator ==(Object other) {
     return other is CompoundCaseClass &&
         gen == other.gen &&
-        simple == other.simple &&
+        simples == other.simples &&
         test == other.test;
   }
-}
 
-// metadata:
-// - @caseClass caseClass()
-//  - @caseClass caseClass()
-//  ConstructorElementImpl
-//   ParameterElementImpl gen
-//   ParameterElementImpl simple
-//   ParameterElementImpl test
-//  TypeParameterElementImpl T
+// TODO: add hashcode
+}

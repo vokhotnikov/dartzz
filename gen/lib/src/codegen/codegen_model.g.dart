@@ -59,24 +59,28 @@ class GenericTypeArg {
 @immutable
 class ReferencedType {
   final String name; // true
+  final ListK<ReferencedType> typeArgs; // true
 
   @protected
   Type get zz__proto => _ReferencedType;
 
-  const ReferencedType(this.name);
+  const ReferencedType(this.name, this.typeArgs);
 
   @override
   String toString() {
-    return "ReferencedType(${name.toString()})";
+    return "ReferencedType(${name.toString()}, ${typeArgs.toString()})";
   }
 
   @override
   bool operator ==(Object other) {
-    return other is ReferencedType && name == other.name;
+    return other is ReferencedType &&
+        name == other.name &&
+        typeArgs == other.typeArgs;
   }
 // elements tree:
-//  ConstructorElementImpl  (_ReferencedType _ReferencedType(String name))
+//  ConstructorElementImpl  (_ReferencedType _ReferencedType(String name, ListK<_ReferencedType> typeArgs))
 //   ParameterElementImpl name (String name)
+//   ParameterElementImpl typeArgs (ListK<_ReferencedType> typeArgs)
 }
 
 @immutable
@@ -191,10 +195,6 @@ class CaseClassCode {
         methods == other.methods;
   }
 // elements tree:
-//  PropertyAccessorElementImpl_ImplicitGetter genericArgs (ListK<_GenericTypeArg> get genericArgs)
-//  PropertyAccessorElementImpl_ImplicitSetter genericArgs= (void set genericArgs(ListK<_GenericTypeArg> _genericArgs))
-//   ParameterElementImpl_ofImplicitSetter _genericArgs (ListK<_GenericTypeArg> _genericArgs)
-//  FieldElementImpl genericArgs (ListK<_GenericTypeArg> genericArgs)
 //  ConstructorElementImpl  (_CaseClassCode _CaseClassCode(String name, ListK<_GenericTypeArg> genericArgs, ListK<_ImmutableField> fields, ListK<_FunctionOrMethod> methods))
 //   ParameterElementImpl name (String name)
 //   ParameterElementImpl genericArgs (ListK<_GenericTypeArg> genericArgs)

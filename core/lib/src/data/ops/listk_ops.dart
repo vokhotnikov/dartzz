@@ -1,7 +1,11 @@
 import '../option.dart';
 import '../listk.dart';
 import '../func.dart';
+import '../tuples.dart';
+import '../range.dart';
 import '../../syntax/option_syntax.dart';
+import '../../syntax/listk_syntax.dart';
+import 'dart:math';
 
 extension ListKOps<A> on ListK<A> {
   int get length => this.private__rawValue.length;
@@ -19,6 +23,12 @@ extension ListKOps<A> on ListK<A> {
   ListK<A> add(A newEl) {
     var rawCopy = List<A>.from(this.private__rawValue);
     rawCopy.add(newEl);
+    return ListK<A>(rawCopy);
+  }
+
+  ListK<A> prepend(A newEl) {
+    var rawCopy = List<A>.from(this.private__rawValue);
+    rawCopy.insert(0, newEl);
     return ListK<A>(rawCopy);
   }
 
@@ -41,5 +51,24 @@ extension ListKOps<A> on ListK<A> {
     final copy = List<A>.of(this.private__rawValue);
     copy.sort((x, y) => Comparable.compare(selector(x), selector(y)));
     return ListK<A>(copy);
+  }
+
+  ListK<Tuple2<A, B>> zipWith<B>(ListK<B> other) {
+    // TODO: possibly might implement via fold: https://stackoverflow.com/questions/28131135/how-to-implement-zip-with-foldl-in-an-eager-language
+    var res = <Tuple2<A, B>>[];
+
+    final rawAs = this.private__rawValue;
+    final rawBs = other.private__rawValue;
+    final newLength = min(rawAs.length, rawBs.length);
+    for (var i = 0; i < newLength; ++i) {
+      res.add(Tuple2<A, B>(rawAs[i], rawBs[i]));
+    }
+
+    return ListK<Tuple2<A, B>>(res);
+  }
+
+  ListK<Tuple2<int, A>> zipWithIndex() {
+    final indexes = IntRange(0, this.length).toList();
+    return indexes.zipWith(this);
   }
 }

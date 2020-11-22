@@ -47,6 +47,11 @@ void main() {
       expect([-9, 10, 0].k().add(0), equals([-9, 10, 0, 0].k()));
     });
 
+    test("prepend", () {
+      expect(<int>[].k().prepend(0), equals([0].k()));
+      expect([2, 3, 0].k().prepend(1), equals([1, 2, 3, 0].k()));
+    });
+
     test("element at index", () {
       final l = <int>[3, 0, -9, 1].k();
 
@@ -78,6 +83,11 @@ void main() {
           equals(<int>[0, 2, 8, 12].k()));
       expect(<int>[8, 0, 12, 2].k().sortBy((a1) => a1.toString()),
           equals(<int>[0, 12, 2, 8].k()));
+    });
+
+    test("zip with index", () {
+      expect(["a", "c", "b"].k().zipWithIndex(),
+          equals([Tuple2(0, "a"), Tuple2(1, "c"), Tuple2(2, "b")].k()));
     });
 
     test("better comprehension syntax", () {

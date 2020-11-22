@@ -1,8 +1,8 @@
 import 'package:meta/meta.dart';
+import 'package:dartzz_core/dartzz_core.dart';
 import 'package:dartzz_meta/dartzz_meta.dart';
 
 part 'caseclass.g.dart';
-
 
 @caseClass()
 class _SimpleCaseClass {
@@ -21,5 +21,6 @@ class _GenericCaseWithRestrictions<E extends Exception, A> {
 
 @caseClass()
 class _CompoundCaseClass<T> {
-  const _CompoundCaseClass(_GenericCaseClass<String, T> gen, _SimpleCaseClass simple, String test);
+  const _CompoundCaseClass(_GenericCaseClass<String, T> gen,
+      Option<_SimpleCaseClass> simples, String test);
 }

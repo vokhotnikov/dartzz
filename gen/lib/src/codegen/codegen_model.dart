@@ -5,7 +5,9 @@ import 'package:dartzz_core/dartzz_core.dart';
 part 'codegen_model.g.dart';
 
 @caseClass()
-class _CodeChunk { _CodeChunk(String code); }
+class _CodeChunk {
+  _CodeChunk(String code);
+}
 
 @caseClass()
 class _GenericTypeArg {
@@ -14,7 +16,7 @@ class _GenericTypeArg {
 
 @caseClass()
 class _ReferencedType {
-  _ReferencedType(String name);
+  _ReferencedType(String name, ListK<_ReferencedType> typeArgs);
 }
 
 @caseClass()
@@ -29,12 +31,12 @@ class _FunctionParameter {
 
 @caseClass()
 class _FunctionOrMethod {
-  _FunctionOrMethod(String name, ListK<_GenericTypeArg> genericParams, ListK<_FunctionParameter> parameters, _CodeChunk body);
+  _FunctionOrMethod(String name, ListK<_GenericTypeArg> genericParams,
+      ListK<_FunctionParameter> parameters, _CodeChunk body);
 }
 
 @caseClass()
 class _CaseClassCode {
-  ListK<_GenericTypeArg> genericArgs;
-
-  _CaseClassCode(String name, ListK<_GenericTypeArg> genericArgs, ListK<_ImmutableField> fields, ListK<_FunctionOrMethod> methods);
+  _CaseClassCode(String name, ListK<_GenericTypeArg> genericArgs,
+      ListK<_ImmutableField> fields, ListK<_FunctionOrMethod> methods);
 }
