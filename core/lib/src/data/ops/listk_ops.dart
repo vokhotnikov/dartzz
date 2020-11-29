@@ -18,7 +18,7 @@ extension ListKOps<A> on ListK<A> {
 
   Option<ListK<A>> tailOption() => Some<List<A>>(this.private__rawValue)
       .filter((l) => l.isNotEmpty)
-      .map((l) => ListK<A>(l.getRange(1, l.length)));
+      .map((l) => ListK<A>(l.getRange(1, l.length).toList()));
 
   ListK<A> add(A newEl) {
     var rawCopy = List<A>.from(this.private__rawValue);

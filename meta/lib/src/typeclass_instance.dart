@@ -1,3 +1,5 @@
-class typeclassInstance {
-  const typeclassInstance();
+class TypeclassInstanceAnnotation {
+  const TypeclassInstanceAnnotation();
 }
+
+const typeclassInstance = TypeclassInstanceAnnotation();

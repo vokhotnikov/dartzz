@@ -1,3 +1,5 @@
-class caseClass {
-  const caseClass();
+class CaseClassAnnotation {
+  const CaseClassAnnotation();
 }
+
+const caseclass = CaseClassAnnotation();

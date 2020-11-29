@@ -7,6 +7,10 @@ import 'codegen_model.dart';
 class CodegenInstances {
   static final CodegenSource<CaseClassCode> caseClassCodegenInstance =
       _CaseClassCodegenInstance();
+
+  static final CodegenSource<TypeclassSyntaxProxyExtension>
+      typeclassSyntaxProxyExtensionCodegenInstance =
+      _TypeclassSyntaxProxyExtensionCodegenInstance();
 }
 
 @immutable
@@ -79,6 +83,67 @@ class _CaseClassCodegenInstance extends CodegenSource<CaseClassCode>
       newline(),
       code('}'),
       newline()
+    ].k();
+  }
+}
+
+class _TypeclassSyntaxProxyExtensionCodegenInstance
+    extends CodegenSource<TypeclassSyntaxProxyExtension>
+    with CodegenSourceInstances {
+  @override
+  ListK<CodeChunk> generateCode(TypeclassSyntaxProxyExtension proxy) {
+    return <CodeChunk>[
+      code("// proxy will be generated here"),
+      newline(),
+      code(
+          "extension ${proxy.subjectType.name}__${proxy.typeclass.name}__Ext on ${proxy.subjectType.name} {"),
+      newline(),
+      code(
+          "static const syntax = ${proxy.syntaxType.name}<${proxy.subjectType.name}>("),
+      ...referencedTypeSource.generateCode(proxy.instanceType).toList(),
+      code("());"),
+      newline(),
+      newline(),
+      code("// methods will be here"),
+      newline(),
+      ...proxy.proxiedMethods
+          .flatMap((m) => <CodeChunk>[
+                ...referencedTypeSource.generateCode(m.returnType).toList(),
+                code(" ${m.name}"),
+                ...intersperse(
+                        m.genericParams
+                            .map((t) => genericTypeArgSource.generateCode(t)),
+                        code("<"),
+                        code(","),
+                        code(">"))
+                    .toList(),
+                code("("),
+                ...intersperse(
+                        m.parameters
+                            .tailOption()
+                            .getOrElse(<FunctionParameter>[].k())
+                            .map((p) => <CodeChunk>[
+                                  ...referencedTypeSource
+                                      .generateCode(p.type)
+                                      .toList(),
+                                  code(" ${p.name}")
+                                ].k()),
+                        code(""),
+                        code(","),
+                        code(""))
+                    .toList(),
+                code(") => syntax.${m.name}(this"),
+                ...m.parameters
+                    .tailOption()
+                    .getOrElse(<FunctionParameter>[].k())
+                    .flatMap((p) => <CodeChunk>[code(", ${p.name}")].k())
+                    .toList(),
+                code(");"),
+                newline()
+              ].k())
+          .toList(),
+      newline(),
+      code("}")
     ].k();
   }
 }

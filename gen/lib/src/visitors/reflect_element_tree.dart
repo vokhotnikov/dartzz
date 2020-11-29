@@ -25,10 +25,9 @@ class ReflectElementTreeVisitor extends GeneralizingElementVisitor {
     return res;
   }
 
-  @override 
+  @override
   visitElement(Element element) {
     result.add(ElementWithLevel(element, _elementLevel(element)));
     return super.visitElement(element);
   }
-
 }

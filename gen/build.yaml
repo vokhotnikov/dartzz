@@ -5,6 +5,13 @@ targets:
         enabled: true
 
 builders:
+  syntax:
+    import: "package:dartzz_gen/builder.dart"
+    builder_factories: ["syntaxBuilder"]
+    build_extensions: {".dart": [".zzsyntax.dart"]}
+    auto_apply: dependents
+    build_to: source
+
   caseclasses:
     import: "package:dartzz_gen/builder.dart"
     builder_factories: ["caseClassesBuilder"]
