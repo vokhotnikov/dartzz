@@ -10,6 +10,7 @@ class ListK<A> extends Kind<ForListK, A> {
 
   const ListK(this._wrapped);
 
+  const ListK.empty() : _wrapped = const [];
   @nonVirtual
   List<A> toList() {
     return List<A>.of(_wrapped);

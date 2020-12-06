@@ -41,3 +41,22 @@ class FunctorForTestingSyntax<F> {
   Kind<F, B> xmap<A, B>(Kind<F, A> f, Func1<B, A> mapper) =>
       instance.map(f, mapper);
 }
+
+@typeclass
+abstract class FilteringFunctorForTesting<F> extends FunctorForTesting<F> {
+  const FilteringFunctorForTesting();
+
+  Kind<F, B> filterMap<A, B>(
+      Kind<F, A> f, Func1<bool, A> predicate, Func1<B, A> mapper);
+}
+
+@typeclassSyntax
+class FilteringFunctorForTestingSyntax<F> {
+  final FilteringFunctorForTesting<F> instance;
+
+  const FilteringFunctorForTestingSyntax(this.instance);
+
+  Kind<F, B> xfmap<A, B>(
+          Kind<F, A> f, Func1<bool, A> predicate, Func1<B, A> mapper) =>
+      instance.filterMap(f, predicate, mapper);
+}

@@ -33,12 +33,20 @@ class OptionInstanceForTesting<A>
 
 @immutable
 @typeclassInstance
-class OptionFunctorForTesting extends FunctorForTesting<ForOption> {
-  const OptionFunctorForTesting();
+class OptionFilteringFunctorForTesting
+    extends FilteringFunctorForTesting<ForOption> {
+  const OptionFilteringFunctorForTesting();
 
   @override
-  Kind<ForOption, B> map<A, B>(Kind<ForOption, A> f, mapper) {
+  Kind<ForOption, B> map<A, B>(Kind<ForOption, A> f, Func1<B, A> mapper) {
     return f.fix().foldOption(() => None<B>(), (a) => Some(mapper(a)));
+  }
+
+  @override
+  Kind<ForOption, B> filterMap<A, B>(
+      Kind<ForOption, A> f, Func1<bool, A> predicate, Func1<B, A> mapper) {
+    return f.fix().foldOption(
+        () => None<B>(), (a) => predicate(a) ? Some(mapper(a)) : None<B>());
   }
 }
 

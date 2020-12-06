@@ -54,6 +54,18 @@ class SyntaxEnrichmentGenerator extends Generator {
     return res.toString();
   }
 
+  ListK<ReferencedType> _allImplementedTypeclasses(InterfaceType fromType) {
+    const checker = TypeChecker.fromRuntime(TypeclassAnnotation);
+
+    if (checker.hasAnnotationOfExact(fromType.element)) {
+      return Option.fromNullable(fromType.superclass)
+          .map(_allImplementedTypeclasses)
+          .getOrElse(ListK<ReferencedType>.empty())
+          .prepend(referencedTypeFromDartType(fromType));
+    } else
+      return ListK<ReferencedType>.empty();
+  }
+
   ListK<TypeclassSyntaxProxyExtension> _constructProxyExtensions(
       ClassElement instanceElement, LibraryElement library, StringBuffer res) {
     const syntaxChecker = TypeChecker.fromRuntime(TypeclassSyntaxAnnotation);
@@ -66,69 +78,72 @@ class SyntaxEnrichmentGenerator extends Generator {
 
     res.writeln("// Raw instance supertype: ${instanceElement.supertype}");
 
-    final typeclassType =
-        fixHigherKinds(referencedTypeFromDartType(instanceElement.supertype));
-    final maybeRawSubjectType = typeclassType.typeArgs.headOption();
+    final typeclassTypes = _allImplementedTypeclasses(instanceElement.supertype)
+        .map(fixHigherKinds);
 
-    res.writeln("// Typeclass type: ${typeclassType}");
+    return typeclassTypes.flatMap((typeclassType) {
+      final maybeRawSubjectType = typeclassType.typeArgs.headOption();
 
-    ListK<Tuple2<ReferencedType, ListK<FunctionOrMethod>>>
-        syntaxTypesAndMethods =
-        findClasses(library, (c) => syntaxChecker.hasAnnotationOfExact(c))
-            .filter((c) =>
-                c.constructors.length == 1 &&
-                c.constructors[0].parameters
-                    .k()
-                    .headOption()
-                    .map((p1) =>
-                        referencedTypeFromDartType(p1.type).name ==
-                        typeclassType.name)
-                    .getOrElse(false))
-            .map((a) {
-      final syntaxType = referencedTypeFromDartType(a.thisType);
-      final substituteSyntaxType = zz.forOption.applicative
-          .map2(syntaxType.typeArgs.headOption(), maybeRawSubjectType,
-              (a1, rawSubjectType) {
-            res.writeln(
-                "// scheduling syntax type substitution ${a1.toString()} -> ${rawSubjectType.toString()}");
-            return (t) => fixHigherKinds(substituteTypes(
-                [Tuple2<ReferencedType, ReferencedType>(a1, rawSubjectType)]
-                    .k(),
-                t));
-          })
-          .fix()
-          .getOrElse((t) => t);
-      return Tuple2(
-          substituteSyntaxType(syntaxType),
-          a.listChildren<MethodElement>().map((e) {
-            res.writeln(_printMethodInfo(e));
-            return parseFunctionOrMethod(e);
-          }).map((m) => applyFuncTypeSubstitutions(
-                  (t) => substituteSyntaxType(t).some(), m)
-              .getOrElse(m)));
-    });
+      res.writeln("// Typeclass type: ${typeclassType}");
 
-    return maybeRawSubjectType.map((rawSubjectType) {
-      final subjectType = fixHigherKinds(
-          higherKindMarkerToGenericKind(rawSubjectType)
-              .getOrElse(rawSubjectType));
-
-      res.writeln("// Subject type: ${subjectType}");
-      return syntaxTypesAndMethods.map((syntaxTypeAndMethods) {
-        res.writeln("// Syntax type: ${syntaxTypeAndMethods.it1}");
-        return TypeclassSyntaxProxyExtension(
-            subjectType: subjectType,
-            typeclass: typeclassType,
-            instanceType: instanceType,
-            syntaxType: syntaxTypeAndMethods.it1,
-            proxiedMethods: syntaxTypeAndMethods.it2.map((f) =>
-                removeFuncTypeParameters(
-                    subjectType.typeArgs
-                        .filter((t) => t.typeArgs.isEmpty)
-                        .map((t) => t.name),
-                    f)));
+      ListK<Tuple2<ReferencedType, ListK<FunctionOrMethod>>>
+          syntaxTypesAndMethods =
+          findClasses(library, (c) => syntaxChecker.hasAnnotationOfExact(c))
+              .filter((c) =>
+                  c.constructors.length == 1 &&
+                  c.constructors[0].parameters
+                      .k()
+                      .headOption()
+                      .map((p1) =>
+                          referencedTypeFromDartType(p1.type).name ==
+                          typeclassType.name)
+                      .getOrElse(false))
+              .map((a) {
+        final syntaxType = referencedTypeFromDartType(a.thisType);
+        final substituteSyntaxType = zz.forOption.applicative
+            .map2(syntaxType.typeArgs.headOption(), maybeRawSubjectType,
+                (a1, rawSubjectType) {
+              res.writeln(
+                  "// scheduling syntax type substitution ${a1.toString()} -> ${rawSubjectType.toString()}");
+              return (t) => fixHigherKinds(substituteTypes(
+                  [Tuple2<ReferencedType, ReferencedType>(a1, rawSubjectType)]
+                      .k(),
+                  t));
+            })
+            .fix()
+            .getOrElse((t) => t);
+        return Tuple2(
+            substituteSyntaxType(syntaxType),
+            a.listChildren<MethodElement>().map((e) {
+              res.writeln(_printMethodInfo(e));
+              return parseFunctionOrMethod(e);
+            }).map((m) => applyFuncTypeSubstitutions(
+                    (t) => substituteSyntaxType(t).some(), m)
+                .getOrElse(m)));
       });
-    }).getOrElse(<TypeclassSyntaxProxyExtension>[].k());
+
+      return maybeRawSubjectType.map((rawSubjectType) {
+        final subjectType = fixHigherKinds(
+            higherKindMarkerToGenericKind(rawSubjectType)
+                .getOrElse(rawSubjectType));
+
+        res.writeln("// Subject type: ${subjectType}");
+        return syntaxTypesAndMethods.map((syntaxTypeAndMethods) {
+          res.writeln("// Syntax type: ${syntaxTypeAndMethods.it1}");
+          return TypeclassSyntaxProxyExtension(
+              subjectType: subjectType,
+              typeclass: typeclassType,
+              instanceType: instanceType,
+              syntaxType: syntaxTypeAndMethods.it1,
+              proxiedMethods: syntaxTypeAndMethods.it2.map((f) =>
+                  removeFuncTypeParameters(
+                      subjectType.typeArgs
+                          .filter((t) => t.typeArgs.isEmpty)
+                          .map((t) => t.name),
+                      f)));
+        });
+      }).getOrElse(<TypeclassSyntaxProxyExtension>[].k());
+    });
   }
 
   String _printElementsTree(List<ElementWithLevel> elements) {
