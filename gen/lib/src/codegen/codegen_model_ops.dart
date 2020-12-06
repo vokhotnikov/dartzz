@@ -15,7 +15,8 @@ Option<ReferencedType> _resolveTypeSubstitutions(
       .zipWith(substitutedArgs)
       .map((p) => p.it2.getOrElse(p.it1));
 
-  return resolver(ReferencedType(source.name, newArgs));
+  final newType = ReferencedType(source.name, newArgs);
+  return resolver(newType).getOrElse(newType).some();
 }
 
 ReferencedType withTypeSubstitution(
@@ -33,9 +34,8 @@ Func1<Option<ReferencedType>, ReferencedType> _compositeSubstitution(
 }
 
 Func1<Option<ReferencedType>, ReferencedType> _literalTypeSubstitution(
-    String from, String to) {
-  return (t) =>
-      (t.name == from) ? ReferencedType(to, t.typeArgs).some() : none();
+    ReferencedType from, ReferencedType to) {
+  return (t) => (t == from) ? to.some() : none();
 }
 
 Func1<Option<ReferencedType>, ReferencedType> _kindedTypeSubstitution() {
@@ -54,7 +54,8 @@ Func1<Option<ReferencedType>, ReferencedType> _kindedTypeSubstitution() {
 }
 
 ReferencedType substituteTypes(
-        ListK<Tuple2<String, String>> mapping, ReferencedType source) =>
+        ListK<Tuple2<ReferencedType, ReferencedType>> mapping,
+        ReferencedType source) =>
     withTypeSubstitution(
         _compositeSubstitution(
             mapping.map((m) => _literalTypeSubstitution(m.it1, m.it2))),
@@ -80,6 +81,36 @@ Option<FunctionOrMethod> applyFuncTypeSubstitutions(
               resolvedParameters
                   .zipWith(f.parameters)
                   .map((p) => p.it1.getOrElse(p.it2)),
-              f.body)
+              f.body,
+              f.returnsHigherKinded)
           .some();
+}
+
+FunctionOrMethod removeFuncTypeParameters(
+    ListK<String> toRemove, FunctionOrMethod f) {
+  final toRemoveSet = Set.from(toRemove.toList());
+
+  final newTypeParams =
+      f.genericParams.filter((a) => !toRemoveSet.contains(a.name));
+
+  return (f.genericParams.length == newTypeParams.length)
+      ? f
+      : FunctionOrMethod(f.name, f.returnType, newTypeParams, f.parameters,
+          f.body, f.returnsHigherKinded);
+}
+
+Option<ReferencedType> higherKindMarkerToGenericKind(
+    ReferencedType maybeMarkerType) {
+  // TODO this would likely need to be changed to something more robust
+  if (maybeMarkerType.typeArgs.isEmpty &&
+      maybeMarkerType.name.startsWith("For")) {
+    return ReferencedType(
+            "Kind",
+            <ReferencedType>[
+              maybeMarkerType,
+              ReferencedType("A", <ReferencedType>[].k())
+            ].k())
+        .some();
+  } else
+    return none();
 }

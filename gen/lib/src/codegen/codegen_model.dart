@@ -45,6 +45,11 @@ class ReferencedType {
 
   const ReferencedType(this.name, this.typeArgs);
 
+  const ReferencedType.simple(this.name)
+      : typeArgs = const ListK<ReferencedType>([]);
+
+  bool get isSimple => this.typeArgs.isEmpty;
+
   @override
   String toString() {
     return "ReferencedType(${name.toString()}, ${typeArgs.toString()})";
@@ -102,14 +107,15 @@ class FunctionOrMethod {
   final ReferencedType returnType;
   final ListK<GenericTypeArg> genericParams;
   final ListK<FunctionParameter> parameters;
-  final CodeChunk body;
+  final Option<CodeChunk> body;
+  final bool returnsHigherKinded;
 
   const FunctionOrMethod(this.name, this.returnType, this.genericParams,
-      this.parameters, this.body);
+      this.parameters, this.body, this.returnsHigherKinded);
 
   @override
   String toString() {
-    return "FunctionOrMethod(${returnType.toString()}, {name.toString()}, ${genericParams.toString()}, ${parameters.toString()}, ${body.toString()})";
+    return "FunctionOrMethod(${returnType.toString()}, {name.toString()}, ${genericParams.toString()}, ${parameters.toString()}, ${body.toString()}, ${returnsHigherKinded.toString()})";
   }
 
   @override
@@ -119,7 +125,8 @@ class FunctionOrMethod {
         returnType == other.returnType &&
         genericParams == other.genericParams &&
         parameters == other.parameters &&
-        body == other.body;
+        body == other.body &&
+        returnsHigherKinded == other.returnsHigherKinded;
   }
 }
 

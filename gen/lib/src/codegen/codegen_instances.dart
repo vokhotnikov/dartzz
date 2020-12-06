@@ -95,11 +95,21 @@ class _TypeclassSyntaxProxyExtensionCodegenInstance
     return <CodeChunk>[
       code("// proxy will be generated here"),
       newline(),
-      code(
-          "extension ${proxy.subjectType.name}__${proxy.typeclass.name}__Ext on ${proxy.subjectType.name} {"),
+      code("extension ${proxy.subjectType.name}__${proxy.typeclass.name}__Ext"),
+      ...intersperse(
+              proxy.subjectType.typeArgs
+                  .map((ta) => referencedTypeSource.generateCode(ta)),
+              code("<"),
+              code(","),
+              code(">"))
+          .toList(),
+      code(" on "),
+      ...referencedTypeSource.generateCode(proxy.subjectType).toList(),
+      code(" {"),
       newline(),
-      code(
-          "static const syntax = ${proxy.syntaxType.name}<${proxy.subjectType.name}>("),
+      code("static const syntax = "),
+      ...referencedTypeSource.generateCode(proxy.syntaxType).toList(),
+      code("("),
       ...referencedTypeSource.generateCode(proxy.instanceType).toList(),
       code("());"),
       newline(),
@@ -138,7 +148,9 @@ class _TypeclassSyntaxProxyExtensionCodegenInstance
                     .getOrElse(<FunctionParameter>[].k())
                     .flatMap((p) => <CodeChunk>[code(", ${p.name}")].k())
                     .toList(),
-                code(");"),
+                code(")"),
+                ...(m.returnsHigherKinded) ? [code(".fix()")] : [],
+                code(";"),
                 newline()
               ].k())
           .toList(),

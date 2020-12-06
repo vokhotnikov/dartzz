@@ -5,8 +5,17 @@ import 'package:dartzz_core/dartzz_core.dart';
 import 'package:source_gen/source_gen.dart';
 
 import 'codegen/codegen_model.dart';
+import 'visitors/extract_children.dart';
 
 ReferencedType referencedTypeFromDartType(DartType t) {
+  if (t is FunctionType) {
+    return ReferencedType(
+        "Func${t.normalParameterTypes.length}",
+        t.normalParameterTypes
+            .k()
+            .prepend(t.returnType)
+            .map(referencedTypeFromDartType));
+  }
   return ReferencedType(
       typeNameForPossibleProto(t),
       t is ParameterizedType
@@ -15,14 +24,26 @@ ReferencedType referencedTypeFromDartType(DartType t) {
 }
 
 FunctionOrMethod parseFunctionOrMethod(MethodElement methodElement) {
+  FunctionParameter parseParameter(ParameterElement pe) {
+    final tpes = pe.listChildren<TypeParameterElement>();
+    if (tpes.length > 0) {
+      final funcType = ReferencedType("Func${pe.typeParameters.length - 1}",
+          tpes.map((tpe) => referencedTypeFromDartType(tpe.type)));
+      return FunctionParameter(pe.name, funcType);
+    }
+
+    return FunctionParameter(pe.name, referencedTypeFromDartType(pe.type));
+  }
+
+  final returnType = referencedTypeFromDartType(methodElement.returnType);
   return FunctionOrMethod(
       methodElement.name,
-      referencedTypeFromDartType(methodElement.returnType),
+      returnType,
       methodElement.typeParameters.k().map((a) => GenericTypeArg(a.name,
           Option.fromNullable(a.bound).map(referencedTypeFromDartType))),
-      methodElement.parameters.k().map(
-          (p) => FunctionParameter(p.name, referencedTypeFromDartType(p.type))),
-      CodeChunk(""));
+      methodElement.parameters.k().map(parseParameter),
+      none(),
+      returnType.name == "Kind" && !returnType.typeArgs.isEmpty);
 }
 
 String typeNameForPossibleProto(DartType dartType) {

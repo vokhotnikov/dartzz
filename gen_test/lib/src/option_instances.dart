@@ -32,6 +32,7 @@ class OptionInstanceForTesting<A>
 }
 
 @immutable
+@typeclassInstance
 class OptionFunctorForTesting extends FunctorForTesting<ForOption> {
   const OptionFunctorForTesting();
 
@@ -42,12 +43,14 @@ class OptionFunctorForTesting extends FunctorForTesting<ForOption> {
 }
 
 // expected to generate:
+/* done
 extension Option__FunctorFotTesting__Ext<A> on Option<A> {
   static const syntax =
       FunctorForTestingSyntax<ForOption>(OptionFunctorForTesting());
 
   Option<B> xmap<B>(Func1<B, A> mapper) => syntax.xmap(this, mapper).fix();
 }
+*/
 
 /*
 extension Option__TypeclassForTesting__Ext<A> on Option<A> {

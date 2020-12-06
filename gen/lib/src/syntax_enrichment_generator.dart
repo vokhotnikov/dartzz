@@ -22,7 +22,6 @@ class SyntaxEnrichmentGenerator extends Generator {
 
   @override
   String generate(LibraryReader library, BuildStep buildStep) {
-    const typeclassChecker = TypeChecker.fromRuntime(TypeclassAnnotation);
     const instanceChecker =
         TypeChecker.fromRuntime(TypeclassInstanceAnnotation);
 
@@ -43,7 +42,7 @@ class SyntaxEnrichmentGenerator extends Generator {
     final proxies = instances
         .flatMap((i) => _constructProxyExtensions(i, library.element, res));
 
-    res.write("// Constructed ${proxies.length} proxy extensions\n");
+    res.writeln("// Constructed ${proxies.length} proxy extensions");
 
     proxies.map((p) => res
       ..writeAll(CodegenInstances.typeclassSyntaxProxyExtensionCodegenInstance
@@ -60,10 +59,17 @@ class SyntaxEnrichmentGenerator extends Generator {
     const syntaxChecker = TypeChecker.fromRuntime(TypeclassSyntaxAnnotation);
 
     final instanceType = referencedTypeFromDartType(instanceElement.thisType);
-    final typeclassType = referencedTypeFromDartType(instanceElement.supertype);
-    final maybeSubjectType = typeclassType.typeArgs.headOption();
-
     res.writeln("// Instance type: ${instanceType}");
+    if (!instanceType.typeArgs.isEmpty) {
+      return <TypeclassSyntaxProxyExtension>[].k();
+    }
+
+    res.writeln("// Raw instance supertype: ${instanceElement.supertype}");
+
+    final typeclassType =
+        fixHigherKinds(referencedTypeFromDartType(instanceElement.supertype));
+    final maybeRawSubjectType = typeclassType.typeArgs.headOption();
+
     res.writeln("// Typeclass type: ${typeclassType}");
 
     ListK<Tuple2<ReferencedType, ListK<FunctionOrMethod>>>
@@ -81,22 +87,32 @@ class SyntaxEnrichmentGenerator extends Generator {
             .map((a) {
       final syntaxType = referencedTypeFromDartType(a.thisType);
       final substituteSyntaxType = zz.forOption.applicative
-          .map2(syntaxType.typeArgs.headOption(), maybeSubjectType,
-              (a1, subjectType) {
-            return (t) => substituteTypes(
-                [Tuple2<String, String>(a1.name, subjectType.name)].k(), t);
+          .map2(syntaxType.typeArgs.headOption(), maybeRawSubjectType,
+              (a1, rawSubjectType) {
+            res.writeln(
+                "// scheduling syntax type substitution ${a1.toString()} -> ${rawSubjectType.toString()}");
+            return (t) => fixHigherKinds(substituteTypes(
+                [Tuple2<ReferencedType, ReferencedType>(a1, rawSubjectType)]
+                    .k(),
+                t));
           })
           .fix()
           .getOrElse((t) => t);
       return Tuple2(
           substituteSyntaxType(syntaxType),
-          a.listChildren<MethodElement>().map(parseFunctionOrMethod).map((m) =>
-              applyFuncTypeSubstitutions(
-                      (t) => substituteSyntaxType(t).some(), m)
-                  .getOrElse(m)));
+          a.listChildren<MethodElement>().map((e) {
+            res.writeln(_printMethodInfo(e));
+            return parseFunctionOrMethod(e);
+          }).map((m) => applyFuncTypeSubstitutions(
+                  (t) => substituteSyntaxType(t).some(), m)
+              .getOrElse(m)));
     });
 
-    return maybeSubjectType.map((subjectType) {
+    return maybeRawSubjectType.map((rawSubjectType) {
+      final subjectType = fixHigherKinds(
+          higherKindMarkerToGenericKind(rawSubjectType)
+              .getOrElse(rawSubjectType));
+
       res.writeln("// Subject type: ${subjectType}");
       return syntaxTypesAndMethods.map((syntaxTypeAndMethods) {
         res.writeln("// Syntax type: ${syntaxTypeAndMethods.it1}");
@@ -105,7 +121,12 @@ class SyntaxEnrichmentGenerator extends Generator {
             typeclass: typeclassType,
             instanceType: instanceType,
             syntaxType: syntaxTypeAndMethods.it1,
-            proxiedMethods: syntaxTypeAndMethods.it2);
+            proxiedMethods: syntaxTypeAndMethods.it2.map((f) =>
+                removeFuncTypeParameters(
+                    subjectType.typeArgs
+                        .filter((t) => t.typeArgs.isEmpty)
+                        .map((t) => t.name),
+                    f)));
       });
     }).getOrElse(<TypeclassSyntaxProxyExtension>[].k());
   }
@@ -117,6 +138,21 @@ class SyntaxEnrichmentGenerator extends Generator {
             "// ${'  ' * e.depthLevel}${e.element.runtimeType} ${e.element.name} (${e.element.toString()})"),
         '\n');
     return b.toString();
+  }
+
+  String _printMethodInfo(MethodElement el) {
+    final visitor = ReflectElementTreeVisitor(el);
+    el.visitChildren(visitor);
+
+    var res = StringBuffer();
+    res
+      ..writeln("// Method ${el.name}")
+      ..writeln("// params: ${el.parameters}")
+      ..writeln("// param types: ${el.parameters.map((p) => p.type)}")
+      ..writeln(
+          "// param runtime type: ${el.parameters.map((p) => p.type.runtimeType)}")
+      ..writeln(_printElementsTree(visitor.result));
+    return res.toString();
   }
 
   String _printClassInfo(ClassElement el) {

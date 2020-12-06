@@ -6,18 +6,29 @@ part of 'option_instances.dart';
 // SyntaxEnrichmentGenerator
 // **************************************************************************
 
-// Found 1 instances
+// Found 2 instances
 // Instance type: ReferencedType(OptionInstanceForTesting, [ReferencedType(A, [])])
-// Typeclass type: ReferencedType(TypeclassForTesting, [ReferencedType(Kind, [ReferencedType(ForOption, []), ReferencedType(A, [])])])
-// Subject type: ReferencedType(Kind, [ReferencedType(ForOption, []), ReferencedType(A, [])])
-// Syntax type: ReferencedType(TypeclassForTestingSyntax, [ReferencedType(F, [])])
+// Instance type: ReferencedType(OptionFunctorForTesting, [])
+// Raw instance supertype: FunctorForTesting<ForOption>
+// Typeclass type: ReferencedType(FunctorForTesting, [ReferencedType(ForOption, [])])
+// scheduling syntax type substitution ReferencedType(F, []) -> ReferencedType(ForOption, [])
+// Method xmap
+// params: [Kind<F, A> f, B Function(A) mapper]
+// param types: (Kind<F, A>, B Function(A))
+// param runtime type: (InterfaceTypeImpl, FunctionTypeImpl)
+//   TypeParameterElementImpl A (A)
+//   TypeParameterElementImpl B (B)
+//   ParameterElementImpl f (Kind<F, A> f)
+//   ParameterElementImpl mapper (B Function(A) mapper)
+
+// Subject type: ReferencedType(Option, [ReferencedType(A, [])])
+// Syntax type: ReferencedType(FunctorForTestingSyntax, [ReferencedType(ForOption, [])])
 // Constructed 1 proxy extensions
 // proxy will be generated here
-extension Kind__TypeclassForTesting__Ext on Kind {
+extension Option__FunctorForTesting__Ext<A> on Option<A> {
   static const syntax =
-      TypeclassForTestingSyntax<Kind>(OptionInstanceForTesting<A>());
+      FunctorForTestingSyntax<ForOption>(OptionFunctorForTesting());
 
 // methods will be here
-  String asString() => syntax.asString(this);
-  bool isEqTo(Kind other) => syntax.isEqTo(this, other);
+  Option<B> xmap<B>(Func1<B, A> mapper) => syntax.xmap(this, mapper).fix();
 }
