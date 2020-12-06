@@ -1,5 +1,8 @@
+import 'package:dartzz_meta/dartzz_meta.dart';
+
 import '../common/kind.dart';
 
+@higherKindMarker(1)
 abstract class ForOption {}
 
 abstract class Option<A> extends Kind<ForOption, A> {
@@ -13,7 +16,9 @@ abstract class Option<A> extends Kind<ForOption, A> {
 }
 
 extension ExOptionFixable<A> on Kind<ForOption, A> {
-  Option<A> fix() { return this as Option<A>; }
+  Option<A> fix() {
+    return this as Option<A>;
+  }
 }
 
 class None<A> extends Option<A> {
@@ -30,7 +35,9 @@ class None<A> extends Option<A> {
   }
 
   @override
-  int get hashCode { return 1; }
+  int get hashCode {
+    return 1;
+  }
 }
 
 class Some<A> extends Option<A> {

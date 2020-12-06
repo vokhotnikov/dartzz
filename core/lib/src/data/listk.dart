@@ -1,6 +1,8 @@
+import 'package:dartzz_meta/dartzz_meta.dart';
 import 'package:meta/meta.dart';
 import '../common/kind.dart';
 
+@higherKindMarker(1)
 abstract class ForListK {}
 
 @immutable

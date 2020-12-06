@@ -1,3 +1,4 @@
+export 'src/higher_kind.dart';
 export 'src/case_class.dart';
 export 'src/case_union.dart';
 export 'src/case_union_member.dart';

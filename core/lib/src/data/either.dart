@@ -1,5 +1,7 @@
 import '../common/kind.dart';
+import 'package:dartzz_meta/dartzz_meta.dart';
 
+@higherKindMarker(2)
 abstract class ForEither {}
 
 abstract class Either<A, B> extends Kind<Kind<ForEither, A>, B> {
@@ -9,7 +11,9 @@ abstract class Either<A, B> extends Kind<Kind<ForEither, A>, B> {
 }
 
 extension EitherFixableExt<A, B> on Kind<Kind<ForEither, A>, B> {
-  Either<A, B> fix() { return this as Either<A, B>; }
+  Either<A, B> fix() {
+    return this as Either<A, B>;
+  }
 }
 
 class Left<A, B> extends Either<A, B> {
@@ -23,8 +27,7 @@ class Left<A, B> extends Either<A, B> {
   }
 
   @override
-  bool operator==(Object other) =>
-  other is Left<A, B> && value == other.value;
+  bool operator ==(Object other) => other is Left<A, B> && value == other.value;
 
   @override
   int get hashCode => value.hashCode;
@@ -41,8 +44,8 @@ class Right<A, B> extends Either<A, B> {
   }
 
   @override
-  bool operator==(Object other) =>
-  other is Right<A, B> && value == other.value;
+  bool operator ==(Object other) =>
+      other is Right<A, B> && value == other.value;
 
   @override
   int get hashCode => value.hashCode;

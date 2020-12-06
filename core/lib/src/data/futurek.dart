@@ -1,6 +1,9 @@
+import 'package:dartzz_meta/dartzz_meta.dart';
+
 import '../common/kind.dart';
 
-abstract class ForFutureK<A> { }
+@higherKindMarker(1)
+abstract class ForFutureK<A> {}
 
 class FutureK<A> implements Kind<ForFutureK, A> {
   final Future<A> _wrapped;
@@ -13,5 +16,7 @@ class FutureK<A> implements Kind<ForFutureK, A> {
 }
 
 extension FutureKFixableExt<A> on Kind<ForFutureK, A> {
-  FutureK<A> fix() { return this as FutureK<A>; }
+  FutureK<A> fix() {
+    return this as FutureK<A>;
+  }
 }

@@ -1,6 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:build/experiments.dart';
 import 'package:dartzz_gen/src/codegen/codegen_instances.dart';
 import 'package:dartzz_gen/src/codegen/codegen_model.dart';
 import 'package:meta/meta.dart';
@@ -72,11 +71,16 @@ class SyntaxEnrichmentGenerator extends Generator {
 
     final instanceType = referencedTypeFromDartType(instanceElement.thisType);
     res.writeln("// Instance type: ${instanceType}");
-    if (!instanceType.typeArgs.isEmpty) {
-      return <TypeclassSyntaxProxyExtension>[].k();
-    }
 
     res.writeln("// Raw instance supertype: ${instanceElement.supertype}");
+
+    if (!referencedTypeFromDartType(instanceElement.supertype)
+        .typeArgs
+        .filter((ta) => !ta.isSimple && ta.name != "Kind")
+        .isEmpty) {
+      // a generic instance without higher kinds, this would depend on inner instances, unsupported at the moment
+      return ListK<TypeclassSyntaxProxyExtension>.empty();
+    }
 
     final typeclassTypes = _allImplementedTypeclasses(instanceElement.supertype)
         .map(fixHigherKinds);
