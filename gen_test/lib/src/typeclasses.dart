@@ -3,7 +3,6 @@ import 'package:dartzz_meta/dartzz_meta.dart';
 import 'package:dartzz_core/dartzz_core.dart';
 
 @typeclass
-@withTypeclassSyntax(TypeclassForTestingSyntax)
 abstract class TypeclassForTesting<F> {
   const TypeclassForTesting();
 
@@ -25,7 +24,6 @@ class TypeclassForTestingSyntax<F> {
 }
 
 @typeclass
-@withTypeclassSyntax(FunctorForTestingSyntax)
 abstract class FunctorForTesting<F> {
   const FunctorForTesting();
 

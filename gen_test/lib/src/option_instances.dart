@@ -8,8 +8,7 @@ part 'option_instances.zzsyntax.dart';
 
 @immutable
 @typeclassInstance
-class OptionInstanceForTesting<A>
-    extends TypeclassForTesting<Kind<ForOption, A>> {
+class OptionInstanceForTesting<A> extends TypeclassForTesting<Option<A>> {
   final TypeclassForTesting<A> innerInstance;
 
   const OptionInstanceForTesting(this.innerInstance);

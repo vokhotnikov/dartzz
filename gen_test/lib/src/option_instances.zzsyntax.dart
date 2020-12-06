@@ -8,6 +8,7 @@ part of 'option_instances.dart';
 
 // Found 2 instances
 // Instance type: ReferencedType(OptionInstanceForTesting, [ReferencedType(A, [])])
+// Raw instance supertype: TypeclassForTesting<Option<A>>
 // Instance type: ReferencedType(OptionFilteringFunctorForTesting, [])
 // Raw instance supertype: FilteringFunctorForTesting<ForOption>
 // Typeclass type: ReferencedType(FilteringFunctorForTesting, [ReferencedType(ForOption, [])])
